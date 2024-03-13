@@ -1,0 +1,10 @@
+.button {
+    color: aqua;
+    text-decoration: none;
+}
+.button-class{
+    background-color: white;
+    padding: 15px 32px;
+    border-radius: 8px;
+    border: 2px solid rgb(232, 136, 59);
+}
