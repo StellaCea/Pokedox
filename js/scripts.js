@@ -27,21 +27,37 @@ let pokemonRepository = (function () {
         return pokemonList;
     }
 
+    function addListItem(pokemon){
+        pokemonList = document.querySelector('ul');
+        let listItem = document.createElement('li');
+        let button = document.createElement('button');
+        button.innerText = pokemon.name;
+        button.classList.add('button-class');
+        listItem.appendChild(button);
+        pokemonList.appendChild(listItem);
+        button.addEventListener('click', function(event){
+            showDetails(pokemon)
+        })
+    }
+
+    function showDetails(pokemon){
+        console.log(pokemon)
+    }
+
     return {
         add: add,
-        getAll: getAll
+        getAll: getAll,
+        addListItem: addListItem,
     };
+
+    
 })();
 
 pokemonRepository.add({name: 'Persian', height: 10, types: ['limber', 'technician', 'unnerve']});
 
 pokemonRepository.getAll().forEach(function(pokemon) {
-        if(pokemon.height >4){
-            console.log(pokemon.name + ' height ' + pokemon.height + ' types: ' + pokemon.types + " Wow, it's big!");
-        }
-        else{
-            console.log(pokemon.name + ' height ' + pokemon.height + ' types: ' + pokemon.types);
-        }
+    pokemonRepository.addListItem(pokemon);
+    
     });
 
 
