@@ -1,25 +1,13 @@
 let pokemonRepository = (function () {
-    let pokemonList = [
-        {
-            name: 'Bulbasaur', height: 7, types: ['gas', 'poison']
-        },
-        {
-            name: 'Charmander', height: 6, types: ['blaze', 'solar-power']
-        },
-        {
-            name: 'Beedrill', height: 1, types: ['swarm', 'sniper']
-        }
-    ];
+    let pokemonList = [];
+    let apiUrl = 'https://pokeapi.co/api/v2/pokemon/?limit=150';
 
     function add(pokemon){
-        if (typeof pokemon === "object"){
-            if(Object.keys(pokemon) === Object.keys(pokemonList[0])){
-                alert("New Pokemon!");
-                pokemonList.push(pokemon);
-            }
-            else{
-                alert("Pokemon not found!")
-            }
+        if (Object.keys(pokemon).includes('name') &&
+        (typeof pokemon === "object")){
+            pokemonList.push(pokemon);
+        } else {
+            alert("Pokemon not found!")
         }
     }
 
@@ -41,24 +29,76 @@ let pokemonRepository = (function () {
     }
 
     function showDetails(pokemon){
-        console.log(pokemon)
+        loadDetails(pokemon).then(function () {
+            console.log(pokemon);
+        });
+    }
+
+    function loadList(){
+        showLoadingMessage();
+        return fetch(apiUrl).then(function (response) {
+            return response.json();
+        }).then (function (json) {
+            hideLoadingMessage();
+            json.results.forEach(function (item) {
+                let pokemon = {
+                    name: item.name,
+                    detailsUrl: item.url
+                };
+                add(pokemon);
+            });
+        }).catch(function (e) {
+            console.error(e);
+            hideLoadingMessage();
+        })
+    }
+
+    function loadDetails(item) {
+        showLoadingMessage();
+        let url = item.detailsUrl;
+        return fetch(url).then(function (response){
+            return response.json();
+        }).then (function (details) {
+            hideLoadingMessage();
+            item.imageUrl = details.sprites.front_defaul;
+            item.height = details.height;
+            item.types = details.types;
+        }).catch(function (e) {
+            console.error(e);
+            hideLoadingMessage();
+        });
+    }
+
+    function showLoadingMessage(){
+        let loadingMessage = document.querySelector('.loading-status');
+        let message = document.createElement('p')
+        message.classList.add('status-message');
+        message.innerText = 'Loading...'
+        loadingMessage.append(message);
+    }
+
+    function hideLoadingMessage(){
+        let message = document.querySelector('.status-message');
+        message.parentElement.removeChild(message);
     }
 
     return {
         add: add,
         getAll: getAll,
         addListItem: addListItem,
+        loadList: loadList,
+        loadDetails: loadDetails
     };
 
     
 })();
 
-pokemonRepository.add({name: 'Persian', height: 10, types: ['limber', 'technician', 'unnerve']});
+pokemonRepository.loadList().then(function() {
+    pokemonRepository.getAll().forEach(function(pokemon) {
+        pokemonRepository.addListItem(pokemon)
+    })
+})
 
-pokemonRepository.getAll().forEach(function(pokemon) {
-    pokemonRepository.addListItem(pokemon);
-    
-    });
 
 
 
