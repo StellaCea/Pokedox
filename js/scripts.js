@@ -30,7 +30,7 @@ let pokemonRepository = (function () {
 
     function showDetails(pokemon){
         loadDetails(pokemon).then(function () {
-            console.log(pokemon);
+            showModal(pokemon.name, pokemon.imageUrl, 'Height: ' + pokemon.height)
         });
     }
 
@@ -68,6 +68,55 @@ let pokemonRepository = (function () {
             hideLoadingMessage();
         });
     }
+
+    function showModal(title, url, text){
+        let modalContainer = document.querySelector('#modal-container');
+        modalContainer.innerText = '';
+
+        let modal = document.createElement('div');
+        modal.classList.add('modal');
+
+        let closeButton = document.createElement('button');
+        closeButton.classList.add('modal-close');
+        closeButton.innerHTML = 'Close';
+        closeButton.addEventListener('click', hideModal);
+
+        let titleElement = document.createElement('h1');
+        titleElement.innerText = title;
+
+        let imgElement = document.createElement('img');
+        imgElement.src = url;
+
+        let contentElement = document.createElement('p')
+        contentElement.innerText = text
+
+        modal.appendChild(closeButton);
+        modal.appendChild(titleElement);
+        modal.appendChild(imgElement);
+        modal.appendChild(contentElement);
+
+        modalContainer.classList.add('is-visible');
+
+        modalContainer.addEventListener('click', (e) => {
+            let target = e.target;
+            if (target === modalContainer){
+                hideModal();
+            }
+        })
+    }
+
+    function hideModal(){
+        let modalContainer = document.querySelector('#modal-container');
+        modalContainer.classList.remove('is-visible');
+    }
+
+    window.addEventListener('keydown', (e) => {
+        let modalContainer = document.querySelector('#modal-container');
+        if (e.key === 'Escape' && modalContainer.classList.contains('is-visible')){
+            hideModal();
+        }
+    })
+
 
     function showLoadingMessage(){
         let loadingMessage = document.querySelector('.loading-status');
